@@ -54,4 +54,6 @@ if [ $YAY_CHECK -ne 0 ]; then
 else
   echo "YAY already exist"
 fi
-# TODO
+# TODO: remove packaging from pacman.conf
+# TODO: remove nouveau and install nvidia + X11 conf + lightdm conf
+# TODO: add i3 config + status bar + images + xrandr settings
