@@ -54,6 +54,8 @@ if [ $YAY_CHECK -ne 0 ]; then
 else
   echo "YAY already exist"
 fi
+# TODO: install oh-my-zsh
 # TODO: remove packaging from pacman.conf
 # TODO: remove nouveau and install nvidia + X11 conf + lightdm conf
+# TODO: install gnome-terminals + feh for i3 config
 # TODO: add i3 config + status bar + images + xrandr settings
