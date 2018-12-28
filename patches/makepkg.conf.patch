@@ -1,0 +1,9 @@
+--- /etc/makepkg.conf	2018-07-27 05:33:58.000000000 +0200
++++ /etc/makepkg.conf.new	2018-12-28 13:18:21.396615138 +0100
+@@ -141,5 +141,5 @@
+ # WARNING: Do NOT modify these variables unless you know what you are
+ #          doing.
+ #
+-PKGEXT='.pkg.tar.xz'
++PKGEXT='.pkg.tar'
+ SRCEXT='.src.tar.gz'

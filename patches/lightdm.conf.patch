@@ -1,0 +1,4 @@
+120c120
+< #display-setup-script=
+---
+> display-setup-script=/home/%user%/display_script.sh
