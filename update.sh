@@ -49,7 +49,7 @@ function update {
 
 # This method updates all AUR packages without asking
 function yupdate {
-  yay -Syyu --needed --noconfirm > /dev/null
+  sudo -u $CURRUSER yay -Syyu --needed --noconfirm > /dev/null
 }
 
 # This method checks if it is necessary to install a package and do it if needed.
@@ -59,7 +59,7 @@ function install {
 
 # This method checks if it is necessary to install an AUR package and do it if needed.
 function yinstall {
-  yay -Sy $1 --needed --noconfirm > /dev/null
+  sudo -u $CURRUSER yay -Sy $1 --needed --noconfirm > /dev/null
 }
 
 # This method checks if a package is installed
@@ -116,32 +116,38 @@ function init {
   # Patch makeconf file to prevent COMPRESSING AUR packages when installing
   inc
   echo "$COUNTER. Patch makepkg.conf for preventing COMPRESSION of AUR packages"
-  patch /etc/makepkg.conf < $CURRPATH/patches/makepkg.conf.patch
+  patch -N /etc/makepkg.conf < $CURRPATH/patches/makepkg.conf.patch
 }
 
 # Blacklist nouveau and install nvidia driver
 function nvidia {
-  if [ -f /etc/modprobe.d/blacklist.conf ]; then
-    TEMP_DATA=$( cat /etc/modprobe.d/blacklist.conf | grep nouveau )
-    if [ -n $TEMP_DATA ]; then
-      echo "Nouveau already blacklisted"
-    else
-      # Blacklist nouveau driver
-      echo "Blacklist nouveau driver"
-      touch /etc/modprobe.d/blacklist.conf
-      patch /etc/modprobe.d/blacklist.conf < $CURRPATH/patches/blacklist.conf.patch
-      # Install nvidia and nvidia utils
-      echo "Install nvidia and nvidia utils"
-      yinstall nvidia
-      yinstall nvidia-utils
-      # Copy display script
-      echo "Copy display script"
-      cp $CURRPATH/display_script.sh /home/$CURRUSER/display_script.sh
-      echo "Copy nvidia X11 configuration"
-      cp $CURRPATH/20-intel.conf /etc/X11/xorg.conf.d/20-intel.conf
-      echo "Apply patch for lightdm config"
-      patch /etc/lightdm/lightdm.conf < $CURRPATH/patches/lightdm.conf.patch
-    fi
+  touch /etc/modprobe.d/blacklist.conf
+  TEMP_DATA=$( cat /etc/modprobe.d/blacklist.conf | grep nouveau )
+  if [ -n "$TEMP_DATA" ]; then
+    echo "Nouveau already blacklisted"
+  else
+    # Blacklist nouveau driver
+    echo "Blacklist nouveau driver"
+    touch /etc/modprobe.d/blacklist.conf
+    patch -N /etc/modprobe.d/blacklist.conf < $CURRPATH/patches/blacklist.conf.patch
+    # Install nvidia and nvidia utils
+    echo "Install nvidia and nvidia utils"
+    yinstall nvidia
+    yinstall nvidia-utils
+    # Copy display script
+    echo "Copy display script"
+    cp $CURRPATH/display_script.sh /home/$CURRUSER/display_script.sh
+    # Copy X11 config
+    echo "Copy nvidia X11 configuration"
+    cp $CURRPATH/20-intel.conf /etc/X11/xorg.conf.d/20-intel.conf
+    # Apply lightdm patch
+    echo "Apply patch for lightdm config"
+    cat $CURRPATH/patches/lightdm.conf.patch | sed "s|%user%|$CURRUSER|g" > $CURRPATH/patches/lightdm.conf.patch.tmp
+    patch -N /etc/lightdm/lightdm.conf < $CURRPATH/patches/lightdm.conf.patch.tmp
+    rm -f $CURRPATH/patches/lightdm.conf.patch.tmp
+    # Rebuild kernel boot image
+    echo "Rebuild kernel boot image"
+    mkinitcpio -p linux > /dev/null
   fi
 }
 
