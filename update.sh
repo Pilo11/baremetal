@@ -151,6 +151,44 @@ function nvidia {
   fi
 }
 
+# This method checks if i3 has already been configured and does it if necessary
+function i3 {
+  # Make sure that the i3 config file exists
+  echo "Make sure that the i3 config file exists"
+  sudo -u $CURRUSER mkdir -p /home/$CURRUSER/.config/i3
+  sudo -u $CURRUSER touch /home/$CURRUSER/.config/i3/config
+  echo "Overwrite i3 config"
+  sudo -u $CURRUSER cp -R $CURRPATH/i3 /home/$CURRUSER/.config
+  echo "Overwrite i3 status config"
+  sudo -u $CURRUSER cp -R $CURRPATH/i3status /home/$CURRUSER/.config
+  echo "Install gnome terminal"
+  yinstall gnome-terminal
+  echo "Install feh for background images"
+  yinstall feh
+  echo "Reload i3 config"
+  sudo -u $CURRUSER i3-msg reload > /dev/null
+}
+
+# This method installs vmware workstation and activates its modules and systemd services
+function vmware {
+  echo "Install VMWare Workstation if necessary"
+  # Check if vmware is installed
+  check vmware-workstation
+  YAY_CHECK=$?
+  if [ $YAY_CHECK -ne 0 ]; then
+    echo "Installing VMWare"
+    yinstall vmware-workstation
+    echo "Enabling vmware systemd services"
+    systemctl enable vmware-networks.service > /dev/null
+    systemctl enable vmware-usbarbitrator.service > /dev/null
+    systemctl enable vmware-hostd.service > /dev/null
+    echo "Activate VMWare kernel modules vmw_vmci and vmmon..."
+    modprobe -a vmw_vmci vmmon
+  else
+    echo "VMWare already exists"
+  fi
+}
+
 # ---------------------------
 # ----- code execution ------
 # ---------------------------
@@ -171,9 +209,21 @@ case "$PROFILE" in
   inc
   echo "$COUNTER. Install nvidia stuff and blacklist nouveau"
   nvidia
+  inc
+  echo "$COUNTER. Configure i3"
+  i3
+  inc
+  echo "$COUNTER. Installing and configuring VMWare"
+  vmware
   ;;
 'DESKTOP')
   echo "$COUNTER. Do profile work: $PROFILE"
+  inc
+  echo "$COUNTER. Configure i3"
+  i3
+  inc
+  echo "$COUNTER. Installing and configuring VMWare"
+  vmware
   ;;
 'SERVER')
   echo "$COUNTER. Do profile work: $PROFILE"
@@ -183,6 +233,5 @@ case "$PROFILE" in
   ;;
 esac
 
-# TODO: add i3 config + status bar + images + xrandr settings (gnome-terminals + feh)
 # TODO: vmware install + preferences (LIKE Keyboard shortcuts)
 # TODO: check multigesture availability and create multigesture shortcut mapping (3 finger tap)
