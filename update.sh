@@ -167,6 +167,8 @@ function i3 {
   yinstall feh
   echo "Install compton for i3 transparency"
   yinstall compton
+  echo "Install scrot for screen shotting"
+  yinstall scrot
   echo "Reload i3 config"
   sudo -u $CURRUSER i3-msg reload > /dev/null
 }
