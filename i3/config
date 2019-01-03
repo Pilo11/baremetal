@@ -211,3 +211,11 @@ bindsym Mod1+Ctrl+Left resize grow width 1 px or 1 ppt
 # Application shortcuts
 bindsym Mod1+Shift+v exec --no-startup-id vmware
 bindsym Mod1+Shift+f fullscreen toggle global
+
+# Screen Shots
+bindsym Mod1+Shift+t exec scrot
+
+# Background
+exec --no-startup-id feh --bg-fill ~/.config/i3/chaos_clown.jpg
+# Transparent terminal
+exec compton --config ~/.config/i3/compton.conf

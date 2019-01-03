@@ -165,6 +165,8 @@ function i3 {
   yinstall gnome-terminal
   echo "Install feh for background images"
   yinstall feh
+  echo "Install compton for i3 transparency"
+  yinstall compton
   echo "Reload i3 config"
   sudo -u $CURRUSER i3-msg reload > /dev/null
 }
