@@ -3,10 +3,13 @@
 # parameters:
 # 1. username of the main user (NOT ROOT)
 # 2. profile of installing (LAPTOP, DESKTOP, SERVER)
+# 3. serial key for VMWare Workstation
 
 # Save current user as variable
 CURRUSER="$1"
 PROFILE="$2"
+VMWARE_SERIAL="$3"
+
 CURRPATH="$PWD"
 
 # check parameter
@@ -25,6 +28,10 @@ fi
 
 if [[ -z "$2" ]]; then
   echo "You did not choose any profile, so it will only do the standard installation"
+fi
+
+if [[ -z "$3" ]]; then
+  echo "You did not enter a VMWare Workstation serial key, so it will not be activated..."
 fi
 
 # check if script executed with root rights
@@ -188,6 +195,12 @@ function vmware {
     systemctl enable vmware-hostd.service > /dev/null
     echo "Activate VMWare kernel modules vmw_vmci and vmmon..."
     modprobe -a vmw_vmci vmmon
+    echo "Starting vmware systemd services"
+    systemctl start vmware-networks.service > /dev/null
+    systemctl start vmware-usbarbitrator.service > /dev/null
+    systemctl start vmware-hostd.service > /dev/null
+    echo "Entering VMWare serial key to activate it"
+    /usr/lib/vmware/bin/vmware-vmx --new-sn $VMWARE_SERIAL > /dev/null
   else
     echo "VMWare already exists"
   fi
