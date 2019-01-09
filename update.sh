@@ -178,6 +178,9 @@ function i3 {
   yinstall scrot
   echo "Reload i3 config"
   sudo -u $CURRUSER i3-msg reload > /dev/null
+  echo "Restore gnome-terminal configuration"
+  sudo -u $CURRUSER dconf reset -f /org/gnome/terminal/
+  sudo -u $CURRUSER dconf load /org/gnome/terminal/ < gnome_terminal_settings_backup
 }
 
 # This method installs vmware workstation and activates its modules and systemd services
